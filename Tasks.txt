@@ -1,0 +1,63 @@
+生成空心圓 / 實心圓
+
+邊框
+0.0f, 5.0f
+40.0f, 5.0f
+
+0.0f, -5.0f
+40.0f, -5.0f
+
+0.0f, -5.0f 
+0.0f, 5.0f
+
+40.0f, -5.0f
+40.0f, 5.0f
+
+GoalPoint
+glm::vec2(20.0f, 0.0f)
+glm::vec2(19.0f, -0.5f)
+glm::vec2(19.0f, 0.5f)
+glm::vec2(21.0f, -0.5f)
+glm::vec2(21.0f, 0.5f)
+
+
+
+Calculate ActualVelocity
+
+if(|| PreferedVelocity || <= SpeedMax)
+    Gfunction = 1.0f
+else
+    Gfunction = (SpeedMax / || PreferedVelocity ||)
+
+ActualVelocity = PreferedVelocity * Gfunction
+
+Fluctuation = (0.0f, 0.0f)
+PreferedVelocity = PreferedVelocity + (TotalForce + Fluctuation) * deltaTime
+
+TotalForce = AccelerationForce + RepulsiveEffectByPedestrian + RepulsiveEffectByBorder
+
+AccelerationForce = (DesiredSpeed * DesiredDirection - ActualVelocity) / relaxationTime
+DesiredSpeed = 1.34
+DesiredDirection = (GoalPoint - Center) / || (GoalPoint - Center) || 
+relaxationTime = 0.5
+
+R_a_b = Center - PedestrianB.Center
+D = R_a_b - ((PedestrianB.ActualVelocity - ActualVelocity) * deltaTime)
+
+R_a_bLength = || R_a_b ||
+DLength = || D ||
+
+GradientR_a_b = R_a_b / R_a_bLength;
+GradientD = D / DLength;
+
+A = 0.8
+B = 0.62
+RepulsiveEffectByPedestrian = A * exp(-b / B) * (1.0f / 2.0f) * [ (R_a_bLength + DLength) / (2.0f * b) ] * (GradientR_a_b + GradientD)
+Weight = Lambda + (1.0f - Lambda) * ((1 + (dot(DesiredDirection, R_a_b))) / 2.0f);
+
+B 的點使用投影算出投影點
+UInit_a_B = 12.0f
+R = 0.2f
+RepulsiveEffectByBorder = -((UInit_a_B) * (R_a_B / glm::length(R_a_B)) * exp( - || mR_a_B || / R ))
+
+
